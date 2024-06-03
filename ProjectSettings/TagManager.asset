@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Inventory
+  - book_open
+  - openableBook
   layers:
   - Default
   - TransparentFX

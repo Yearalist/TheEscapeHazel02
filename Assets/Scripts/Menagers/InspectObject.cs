@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InspectObject : MonoBehaviour
 {
-
     private PickUpObject pickUpObjectScript;
     private InputMenager inputMenagerScript;
     
@@ -21,11 +20,14 @@ public class InspectObject : MonoBehaviour
     private bool isDragging = false;
     public bool isInspecting = false;
 
+    private string openableBookTag;
+    
     RaycastHit hit;
     
 
     void Start()
     {
+        openableBookTag = "openableBook";
         pickUpObjectScript = FindObjectOfType<PickUpObject>();
         inputMenagerScript = FindObjectOfType<InputMenager>();
 
@@ -75,6 +77,15 @@ public class InspectObject : MonoBehaviour
 
     private void InspectItem()
     {
+        //test edilmedi kitabin ismi ile ayni olan open halini getirir
+        if (inspectingObject.CompareTag(openableBookTag))
+        {
+            string openableBookName=inspectingObject.name;
+            GameObject openableBookOpen=GameObject.Find(openableBookName+"Open");
+            inspectingObject.GetComponent<MeshRenderer>().enabled=false;
+            inspectingObject = openableBookOpen;
+            inspectingObject.GetComponent<MeshRenderer>().enabled=true;
+        }
         inputMenagerScript.enabled = false;
         originalObejctPosition = inspectingObject.transform.position;
         Debug.Log("Inceliyon");
@@ -91,7 +102,7 @@ public class InspectObject : MonoBehaviour
 
     private void InspectingItem()
     {
-   
+       
         Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 5f);
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenCenter);
       
@@ -132,6 +143,15 @@ public class InspectObject : MonoBehaviour
         if (originalObejctPosition == pickUpObjectScript.handPosition.position)
         {
             pickUpObjectScript.isHolding = true;
+        }
+
+        if (inspectingObject.CompareTag("openedBook"))
+        {
+            string closeBookName = inspectingObject.name.Substring(0, inspectingObject.name.Length-4);
+            GameObject openableBookClose=GameObject.Find(closeBookName);
+            openableBookClose.GetComponent<MeshRenderer>().enabled=false;
+            inspectingObject = openableBookClose;
+            inspectingObject.GetComponent<MeshRenderer>().enabled=true;
         }
         inspectingPanel.SetActive(false);
         inspectingObject = null;

@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+
 public class Inventory : MonoBehaviour
 {
-    private CollectObject1 collectObjectScript;
+   private CollectObject collectObjectScript;
     private InspectObject inspectObjectScript;
     private PickUpObject pickUpObjectScript;
     
@@ -19,13 +20,13 @@ public class Inventory : MonoBehaviour
 
     private int currentSlotIndex = -1; // Başlangıçta aktif slot yok
     public int inventorySlotsNumber;
-    private int i = 0;
+    public int i = 0;
     
     private Transform envanterSlot;
 
     void Start()
     {
-        collectObjectScript= FindObjectOfType<CollectObject1>();
+        collectObjectScript= FindObjectOfType<CollectObject>();
         inspectObjectScript = FindObjectOfType<InspectObject>();
         pickUpObjectScript = FindObjectOfType<PickUpObject>();
         
@@ -71,6 +72,7 @@ public class Inventory : MonoBehaviour
        collectObjectScript.collectingItem = null;
        inventorySlotsNumber--;
        i++;
+       Debug.Log("Aldin" + i);
     }
     private void NavigatingBetweenInventorySlots()
     {
@@ -123,7 +125,7 @@ public class Inventory : MonoBehaviour
         string onSlotItemName = onSlotItemImage.sprite.name;
         Debug.Log(onSlotItemName);
 
-        if (onSlotItemName!="Background"&&onSlotItemName!="SpriteY")
+        if (onSlotItemName!="Background"||onSlotItemName!="SpriteY")
         {
             GameObject onSlotGameObject = GameObject.Find(onSlotItemName);
            
@@ -162,6 +164,4 @@ public class Inventory : MonoBehaviour
         
         
     }
-    
-    
 }

@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Sprites;
 using UnityEngine.UI;
 using UnityEngine;
+
 public class PickUpObject : MonoBehaviour
 {
     private InspectObject inspectObjectScript;
@@ -110,7 +108,12 @@ public class PickUpObject : MonoBehaviour
             {
                 Debug.Log("Buraya geldi");
                 slots.GetComponent<Image>().sprite = spriteY;
+                inventoryScript.inventorySlotsNumber++;
+                inventoryScript.i--;
+                Debug.Log("Biraktin"+inventoryScript.i);
             }
+
+            
 
         }
         var rigidBody = holdingObject.GetComponent<Rigidbody>();
@@ -121,5 +124,4 @@ public class PickUpObject : MonoBehaviour
         isHolding = false;
         Debug.Log("biraktin");
     }
-    
 }
