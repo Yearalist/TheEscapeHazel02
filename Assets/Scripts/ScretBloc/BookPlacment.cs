@@ -1,35 +1,54 @@
-using System.Collections;
-using System.Linq;
+ 
 using System.Collections.Generic;
 using UnityEngine;
-using SecretCloset;  // Book sınıfının bulunduğu namespace'i ekliyoruz
 
 namespace SecretCloset
 {
-    
-public class BookPlacment : MonoBehaviour
-{
-    
-    public ShelfInfo shelf;  // Tek bir rafı tutar
-
-    // Kitabı doğru slota yerleştirme işlemini gerçekleştirir
-    public void PlaceBook(BookInfo book)
+    public class BookPlacment : MonoBehaviour
     {
-        // Kitabın yerleştirileceği hedef slotu bul
-        SlotInfo targetSlot = shelf.slots.FirstOrDefault(slot => slot.slotCode == book.slotCode);
+        public List<ShelfInfo> shelves; // Rafların listesi
 
-        // Eğer hedef slot bulunamadıysa veya slot doluysa uyarı ver
-        if (targetSlot != null && targetSlot.slotTransform.childCount == 0)
+        // Kitabı doğru slota yerleştirme işlemini gerçekleştirir
+        public void PlaceBook(BookInfo book)
         {
-            // Kitabı hedef slota yerleştir ve pozisyonunu ayarla
-            book.transform.SetParent(targetSlot.slotTransform);
-            book.transform.localPosition = Vector3.zero; // Kitabın slot içinde düzgün yerleşmesini sağlamak için
-            Debug.Log($"Book with code {book.slotCode} placed in slot {targetSlot.slotCode}");
-        }
-        else
-        {
-            Debug.LogWarning("No suitable slot found or slot is not empty!");
+            bool bookPlaced = false;
+
+            foreach (ShelfInfo shelf in shelves)
+            {
+                foreach (SlotInfo slot in shelf.slots)
+                {
+                    if (slot.slotTransform.childCount == 0 && slot.slotCode == book.slotCode)
+                    {
+                        // Slotun konum ve rotasyon bilgilerini al
+                        Vector3 slotPosition = slot.slotTransform.position;
+                        Quaternion slotRotation = slot.slotTransform.rotation;
+
+                        // Kitabı hedef slota yerleştir ve pozisyonunu ve rotasyonunu ayarla
+                        book.transform.SetParent(slot.slotTransform);
+                        book.transform.localPosition = Vector3.zero;
+                        book.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+                        // Slotun dünya konum ve rotasyonunu al
+                        Vector3 worldSlotPosition = slot.slotTransform.TransformPoint(slotPosition);
+                        Quaternion worldSlotRotation = slot.slotTransform.rotation * slotRotation;
+
+                        // Kitabın dünya konum ve rotasyonunu ayarla
+                        //book.transform.position = worldSlotPosition;
+                        //book.transform.rotation = worldSlotRotation;
+
+                        Debug.Log($"Book with code {book.slotCode} placed in slot {slot.slotCode}");
+                        bookPlaced = true;
+                        break;
+                    }
+                }
+
+                if (bookPlaced) break;
+            }
+
+            if (!bookPlaced)
+            {
+                Debug.LogWarning("No suitable slot found for book with code " + book.slotCode);
+            }
         }
     }
-}
 }

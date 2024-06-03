@@ -8,17 +8,17 @@ public class PickUpObject : MonoBehaviour
     private InspectObject inspectObjectScript;
     private Inventory inventoryScript;
 
-    public Transform handPosition;//Elin olması gereken pozisyon
+    public Transform handPosition; // Elin olması gereken pozisyon
     
-    private Rigidbody holdingObjectRigidbody;//Eldeki objenin Rigidbodysi
+    private Rigidbody holdingObjectRigidbody; // Eldeki objenin Rigidbodysi
     
-    public GameObject holdingObject;//Eldeki obje
+    public GameObject holdingObject; // Eldeki obje
     
     private Sprite spriteY;
 
     private string spriteYName = "SpriteY";
     
-    public bool isHolding = false;//Elimde obje var mı
+    public bool isHolding = false; // Elimde obje var mı
 
     RaycastHit hit;
     
@@ -28,14 +28,13 @@ public class PickUpObject : MonoBehaviour
         inventoryScript = FindObjectOfType<Inventory>();
         string scriptName = this.GetType().Name;
         Debug.Log("Hello There is " + scriptName);
-        Debug.Log("Holding Control "+ isHolding);
-        spriteY=Resources.Load<Sprite>(spriteYName);
+        Debug.Log("Holding Control " + isHolding);
+        spriteY = Resources.Load<Sprite>(spriteYName);
     }
 
-    
     void Update()
     {
-        if (!isHolding&&!inspectObjectScript.isInspecting)
+        if (!isHolding && !inspectObjectScript.isInspecting)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -43,30 +42,26 @@ public class PickUpObject : MonoBehaviour
                 if (Physics.Raycast(ray, out hit))
                 {
                     if (hit.collider.TryGetComponent(out IInteractable interactObject))
-                    { 
+                    {
                         interactObject.InteractableObjects();
-                       holdingObject = hit.collider.gameObject;
-                       PickUpItem();
-                       
+                        holdingObject = hit.collider.gameObject;
+                        PickUpItem();
                     }
                 }
             }
         }
-
-        else if (isHolding&&!inspectObjectScript.isInspecting)
+        else if (isHolding && !inspectObjectScript.isInspecting)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 DropItem();
-                
             }
         }
-        
     }
 
     private void FixedUpdate()
     {
-        if (isHolding&&!inspectObjectScript.isInspecting)
+        if (isHolding && !inspectObjectScript.isInspecting)
         {
             var holdingObjectCollider = holdingObject.GetComponent<Collider>();
             if (holdingObjectCollider.enabled == false)
@@ -75,12 +70,11 @@ public class PickUpObject : MonoBehaviour
             }
             holdingObject.transform.position = handPosition.transform.position;
             var rigidBody = holdingObject.GetComponent<Rigidbody>();
-            var moveTo=handPosition.transform.position;
+            var moveTo = handPosition.transform.position;
             var differance = moveTo - holdingObject.transform.position;
-            rigidBody.AddForce(differance*500);
+            rigidBody.AddForce(differance * 500);
             holdingObject.transform.rotation = handPosition.rotation;
         }
-        
     }
 
     void PickUpItem()
@@ -91,37 +85,40 @@ public class PickUpObject : MonoBehaviour
         holdingObject.transform.position =
             Vector3.Lerp(holdingObject.transform.position, handPosition.transform.position, 0.4f);
         holdingObjectRigidbody = holdingObject.GetComponent<Rigidbody>();
-        holdingObjectRigidbody.constraints = RigidbodyConstraints.FreezeRotation;//Rotasyonunu dondur
+        holdingObjectRigidbody.constraints = RigidbodyConstraints.FreezeRotation; // Rotasyonunu dondur
         holdingObjectRigidbody.drag = 25f;
         holdingObjectRigidbody.useGravity = false;
-        
-
     }
 
     void DropItem()
     {
-        foreach (GameObject slots in inventoryScript.envanterSlotsList)
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
         {
-            Debug.Log("Child Name 2: " + slots.name);
-            //string slotsImage = slots.GetComponent<Image>().sprite.name;
-            if (holdingObject.name == slots.GetComponent<Image>().sprite.name)
+            SlotInfo slot = hit.collider.GetComponent<SlotInfo>();
+            if (slot != null && slot.slotTransform.childCount == 0)
             {
-                Debug.Log("Buraya geldi");
-                slots.GetComponent<Image>().sprite = spriteY;
-                inventoryScript.inventorySlotsNumber++;
-                inventoryScript.i--;
-                Debug.Log("Biraktin"+inventoryScript.i);
+                holdingObject.transform.SetParent(slot.slotTransform);
+                holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
+                holdingObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
+                holdingObjectRigidbody.drag = 1f;
+                holdingObjectRigidbody.useGravity = true;
+                isHolding = false;
+                holdingObject = null;
+                Debug.Log($"Kitap kodu {slot.slotCode} olan slota yerleştirildi.");
+                return;
             }
-
-            
-
         }
+
+        // Eğer slot bulunamazsa veya doluysa kitabı normal bir şekilde bırak
         var rigidBody = holdingObject.GetComponent<Rigidbody>();
         rigidBody.drag = 1f;
         rigidBody.useGravity = true;
         rigidBody.constraints = RigidbodyConstraints.None;
+        holdingObject.transform.SetParent(null);
         holdingObject = null;
         isHolding = false;
-        Debug.Log("biraktin");
+        Debug.Log("Kitap bırakıldı.");
     }
 }
