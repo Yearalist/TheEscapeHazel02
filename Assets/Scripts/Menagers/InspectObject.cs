@@ -103,7 +103,7 @@ public class InspectObject : MonoBehaviour
     private void InspectingItem()
     {
        
-        Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 5f);
+        Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 2f);
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenCenter);
       
         inspectingObject.transform.position =
