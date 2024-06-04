@@ -9,8 +9,7 @@ namespace SecretCloset
 public class ShelfInfo : MonoBehaviour
 {
 
-    
-    public string shelfCode; // örneğin, "6.1"
-    public List<SlotInfo> slots;
+    public string shelfCode; // Rafın kodu
+    public List<SlotInfo> slots; // Raf üzerindeki slotların listesi
 }
 }

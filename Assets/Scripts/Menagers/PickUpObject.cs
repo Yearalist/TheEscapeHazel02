@@ -7,25 +7,21 @@ public class PickUpObject : MonoBehaviour
 {
     private InspectObject inspectObjectScript;
     private Inventory inventoryScript;
+    private ShelfManager shelfManager; // Raf yöneticisini referans olarak alın
 
     public Transform handPosition; // Elin olması gereken pozisyon
-    
     private Rigidbody holdingObjectRigidbody; // Eldeki objenin Rigidbodysi
-    
     public GameObject holdingObject; // Eldeki obje
-    
     private Sprite spriteY;
-
     private string spriteYName = "SpriteY";
-    
     public bool isHolding = false; // Elimde obje var mı
-
     RaycastHit hit;
-    
+
     void Start()
     {
         inspectObjectScript = FindObjectOfType<InspectObject>();
         inventoryScript = FindObjectOfType<Inventory>();
+        shelfManager = FindObjectOfType<ShelfManager>(); // ShelfManager'ı bulun
         string scriptName = this.GetType().Name;
         Debug.Log("Hello There is " + scriptName);
         Debug.Log("Holding Control " + isHolding);
@@ -100,13 +96,21 @@ public class PickUpObject : MonoBehaviour
             {
                 holdingObject.transform.SetParent(slot.slotTransform);
                 holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
-                holdingObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                holdingObject.transform.localRotation = Quaternion.identity;
+
+                // Kitabın pozisyonunu ve rotasyonunu slotun pozisyonu ve rotasyonuna ayarla
+                holdingObject.transform.position = slot.slotTransform.position;
+                holdingObject.transform.rotation = slot.slotTransform.rotation;
+
                 holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
                 holdingObjectRigidbody.drag = 1f;
                 holdingObjectRigidbody.useGravity = true;
                 isHolding = false;
                 holdingObject = null;
                 Debug.Log($"Kitap kodu {slot.slotCode} olan slota yerleştirildi.");
+
+                // Slotları kontrol et ve rafı hareket ettir
+                shelfManager.CheckAndMoveShelf();
                 return;
             }
         }
@@ -121,4 +125,5 @@ public class PickUpObject : MonoBehaviour
         isHolding = false;
         Debug.Log("Kitap bırakıldı.");
     }
-}
+    }
+
