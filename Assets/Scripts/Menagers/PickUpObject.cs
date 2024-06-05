@@ -7,21 +7,18 @@ public class PickUpObject : MonoBehaviour
 {
     private InspectObject inspectObjectScript;
     private Inventory inventoryScript;
-    private ShelfManager shelfManager; // Raf yöneticisini referans olarak alın
-
     public Transform handPosition; // Elin olması gereken pozisyon
     private Rigidbody holdingObjectRigidbody; // Eldeki objenin Rigidbodysi
     public GameObject holdingObject; // Eldeki obje
     private Sprite spriteY;
     private string spriteYName = "SpriteY";
     public bool isHolding = false; // Elimde obje var mı
-    RaycastHit hit;
+    public ShelfManager shelfManager; // ShelfManager referansı
 
     void Start()
     {
         inspectObjectScript = FindObjectOfType<InspectObject>();
         inventoryScript = FindObjectOfType<Inventory>();
-        shelfManager = FindObjectOfType<ShelfManager>(); // ShelfManager'ı bulun
         string scriptName = this.GetType().Name;
         Debug.Log("Hello There is " + scriptName);
         Debug.Log("Holding Control " + isHolding);
@@ -35,7 +32,7 @@ public class PickUpObject : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     if (hit.collider.TryGetComponent(out IInteractable interactObject))
                     {
@@ -78,8 +75,7 @@ public class PickUpObject : MonoBehaviour
         Debug.Log("Aldin");
         Debug.Log(holdingObject.name);
         isHolding = true;
-        holdingObject.transform.position =
-            Vector3.Lerp(holdingObject.transform.position, handPosition.transform.position, 0.4f);
+        holdingObject.transform.position = Vector3.Lerp(holdingObject.transform.position, handPosition.transform.position, 0.4f);
         holdingObjectRigidbody = holdingObject.GetComponent<Rigidbody>();
         holdingObjectRigidbody.constraints = RigidbodyConstraints.FreezeRotation; // Rotasyonunu dondur
         holdingObjectRigidbody.drag = 25f;
@@ -92,8 +88,9 @@ public class PickUpObject : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
         {
             SlotInfo slot = hit.collider.GetComponent<SlotInfo>();
-            if (slot != null && slot.slotTransform.childCount == 0)
+            if (slot != null && !slot.isOccupied)
             {
+                slot.isOccupied = true;
                 holdingObject.transform.SetParent(slot.slotTransform);
                 holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
                 holdingObject.transform.localRotation = Quaternion.identity;
@@ -108,9 +105,16 @@ public class PickUpObject : MonoBehaviour
                 isHolding = false;
                 holdingObject = null;
                 Debug.Log($"Kitap kodu {slot.slotCode} olan slota yerleştirildi.");
-
+                
                 // Slotları kontrol et ve rafı hareket ettir
-                shelfManager.CheckAndMoveShelf();
+                if (shelfManager != null)
+                {
+                    shelfManager.CheckAndMoveShelf();
+                }
+                else
+                {
+                    Debug.LogError("ShelfManager is not assigned!");
+                }
                 return;
             }
         }
