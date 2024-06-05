@@ -12,4 +12,6 @@ public class ShelfInfo : MonoBehaviour
     public string shelfCode; // Rafın kodu
     public List<SlotInfo> slots; // Raf üzerindeki slotların listesi
 }
+
+
 }

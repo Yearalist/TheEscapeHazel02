@@ -1,7 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using SecretCloset;
 using UnityEngine.UI;
 using UnityEngine;
+
+
+
+
+    
+
+    
 
 public class PickUpObject : MonoBehaviour
 {
@@ -14,6 +22,8 @@ public class PickUpObject : MonoBehaviour
     private string spriteYName = "SpriteY";
     public bool isHolding = false; // Elimde obje var mı
     public ShelfManager shelfManager; // ShelfManager referansı
+    //BookCheck CheckBooks = FindObjectOfType<BookCheck>();
+
 
     void Start()
     {
@@ -90,7 +100,10 @@ public class PickUpObject : MonoBehaviour
             SlotInfo slot = hit.collider.GetComponent<SlotInfo>();
             if (slot != null && !slot.isOccupied)
             {
+                
+
                 slot.isOccupied = true;
+                //CheckBooks.CheckBooks();
                 holdingObject.transform.SetParent(slot.slotTransform);
                 holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
                 holdingObject.transform.localRotation = Quaternion.identity;

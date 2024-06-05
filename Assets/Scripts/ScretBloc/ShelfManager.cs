@@ -25,7 +25,19 @@ public class ShelfManager : MonoBehaviour
                     allSlotsFilled = false;
                 }
             }
-           
+            // foreach (SlotInfo slot in shelf.slots)
+            // {
+            //     if (slot.slotTransform.childCount == 0)
+            //     {
+            //         allSlotsFilled = false;
+            //         Debug.Log($"Slot {slot.slotCode} in shelf {shelf.shelfCode} is empty.");
+            //         break;
+            //     }
+            //     else
+            //     {
+            //         Debug.Log($"Slot {slot.slotCode} in shelf {shelf.shelfCode} is filled.");
+            //     }
+            // }
 
             if (allSlotsFilled)
             {
@@ -37,7 +49,6 @@ public class ShelfManager : MonoBehaviour
         }
     }
 
-    // Rafı hareket ettir
     private IEnumerator MoveShelfSmoothly(ShelfInfo shelf)
     {
         Vector3 startPosition = shelf.transform.position;
