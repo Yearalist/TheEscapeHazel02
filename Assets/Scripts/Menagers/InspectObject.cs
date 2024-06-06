@@ -49,6 +49,7 @@ public class InspectObject : MonoBehaviour
                     if (hit.collider.TryGetComponent(out ICollectable collectObject))
                     {
                         collectObject.CollectableObjects();
+                        
                         inspectingObject = hit.collider.gameObject;
                         InspectItem();
 
