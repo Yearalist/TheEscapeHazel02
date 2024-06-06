@@ -23,7 +23,8 @@ public class PickUpObject : MonoBehaviour
     public bool isHolding = false; // Elimde obje var mı
     public ShelfManager shelfManager; // ShelfManager referansı
     //BookCheck CheckBooks = FindObjectOfType<BookCheck>();
-
+    [SerializeField] private BookPlacment bookPlacement;
+    
 
     void Start()
     {
@@ -94,53 +95,73 @@ public class PickUpObject : MonoBehaviour
 
     void DropItem()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+        BookInfo bookInfo = holdingObject.GetComponent<BookInfo>();
+        if (bookPlacement.TryPlaceBook(bookInfo))
         {
-            SlotInfo slot = hit.collider.GetComponent<SlotInfo>();
-            if (slot != null && !slot.isOccupied)
-            {
-                
-
-                slot.isOccupied = true;
-                //CheckBooks.CheckBooks();
-                holdingObject.transform.SetParent(slot.slotTransform);
-                holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
-                holdingObject.transform.localRotation = Quaternion.identity;
-
-                // Kitabın pozisyonunu ve rotasyonunu slotun pozisyonu ve rotasyonuna ayarla
-                holdingObject.transform.position = slot.slotTransform.position;
-                holdingObject.transform.rotation = slot.slotTransform.rotation;
-
-                holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
-                holdingObjectRigidbody.drag = 1f;
-                holdingObjectRigidbody.useGravity = true;
-                isHolding = false;
-                holdingObject = null;
-                Debug.Log($"Kitap kodu {slot.slotCode} olan slota yerleştirildi.");
-                
-                // Slotları kontrol et ve rafı hareket ettir
-                if (shelfManager != null)
-                {
-                    shelfManager.CheckAndMoveShelf();
-                }
-                else
-                {
-                    Debug.LogError("ShelfManager is not assigned!");
-                }
-                return;
-            }
+            holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
+            holdingObjectRigidbody.drag = 1f;
+            holdingObjectRigidbody.useGravity = true;
+            isHolding = false;
+            holdingObject = null;
         }
-
-        // Eğer slot bulunamazsa veya doluysa kitabı normal bir şekilde bırak
-        var rigidBody = holdingObject.GetComponent<Rigidbody>();
-        rigidBody.drag = 1f;
-        rigidBody.useGravity = true;
-        rigidBody.constraints = RigidbodyConstraints.None;
-        holdingObject.transform.SetParent(null);
-        holdingObject = null;
-        isHolding = false;
-        Debug.Log("Kitap bırakıldı.");
+        else
+        {
+            // Eğer slot bulunamazsa veya doluysa kitabı normal bir şekilde bırak
+            var rigidBody = holdingObject.GetComponent<Rigidbody>();
+            rigidBody.drag = 1f;
+            rigidBody.useGravity = true;
+            rigidBody.constraints = RigidbodyConstraints.None;
+            holdingObject.transform.SetParent(null);
+            holdingObject = null;
+            isHolding = false;
+            Debug.Log("Kitap bırakıldı.");
+        }
+        // RaycastHit hit;
+        // if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+        // {
+        //     
+        //     //BookInfo bookInfo = holdingObject.GetComponent<BookInfo>();
+        //     if (slot != null && !slot.isOccupied && slot.slotCode == bookInfo.slotCode)
+        //     {
+        //         slot.isOccupied = true;
+        //         //CheckBooks.CheckBooks();
+        //         holdingObject.transform.SetParent(slot.slotTransform);
+        //         holdingObject.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
+        //         holdingObject.transform.localRotation = Quaternion.identity;
+        //
+        //         // Kitabın pozisyonunu ve rotasyonunu slotun pozisyonu ve rotasyonuna ayarla
+        //         holdingObject.transform.position = slot.slotTransform.position;
+        //         holdingObject.transform.rotation = slot.slotTransform.rotation;
+        //
+        //         holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
+        //         holdingObjectRigidbody.drag = 1f;
+        //         holdingObjectRigidbody.useGravity = true;
+        //         isHolding = false;
+        //         holdingObject = null;
+        //         Debug.Log($"Kitap kodu {slot.slotCode} olan slota yerleştirildi.");
+        //         
+        //         // Slotları kontrol et ve rafı hareket ettir
+        //         if (shelfManager != null)
+        //         {
+        //             shelfManager.CheckAndMoveShelf();
+        //         }
+        //         else
+        //         {
+        //             Debug.LogError("ShelfManager is not assigned!");
+        //         }
+        //         return;
+        //     }
+        // }
+        //
+        // // Eğer slot bulunamazsa veya doluysa kitabı normal bir şekilde bırak
+        // var rigidBody = holdingObject.GetComponent<Rigidbody>();
+        // rigidBody.drag = 1f;
+        // rigidBody.useGravity = true;
+        // rigidBody.constraints = RigidbodyConstraints.None;
+        // holdingObject.transform.SetParent(null);
+        // holdingObject = null;
+        // isHolding = false;
+        // Debug.Log("Kitap bırakıldı.");
     }
     }
 

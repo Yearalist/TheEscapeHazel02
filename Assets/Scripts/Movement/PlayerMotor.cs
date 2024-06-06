@@ -27,7 +27,7 @@ public class PlayerMotor : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         originalHeight = _controller.height;
         Debug.Log(originalHeight);
-        
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
