@@ -21,6 +21,7 @@ public class Book3 : MonoBehaviour,IInteractable,ICollectable
     {
         pickUpObjectScript= FindObjectOfType<PickUpObject>();
         inspectObjectScript= FindObjectOfType<InspectObject>();
+        
         openBook = GameObject.FindWithTag("book_open");
         //openBook.SetActive(false);
         originalMaterial = GetComponent<Renderer>().material;
