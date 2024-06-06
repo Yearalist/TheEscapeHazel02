@@ -41,7 +41,7 @@ public class Inventory : MonoBehaviour
         
         foreach (GameObject slot in envanterSlotsList)
         {
-            //Debug.Log("Child Name: " + slot.name);
+            Debug.Log("Child Name: " + slot.name);
             slot.GetComponent<Image>().color = inactiveColor;
         }
     }

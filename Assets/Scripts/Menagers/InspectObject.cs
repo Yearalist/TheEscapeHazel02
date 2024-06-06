@@ -33,7 +33,7 @@ public class InspectObject : MonoBehaviour
 
         string scriptName = this.GetType().Name;
         Debug.Log("Hello There is " + scriptName);
-        //Debug.Log("Inspect Control " + isInspecting);
+        Debug.Log("Inspect Control " + isInspecting);
     }
 
 
