@@ -1,9 +1,11 @@
 using UnityEngine;
 
-using UnityEngine;
+
 
 public class SlotInfo : MonoBehaviour
-{ public string slotCode;  // Slotun kodu
+{
+    
+    public string slotCode;  // Slotun kodu
     public Transform slotTransform;  // Slotun transformu
     public bool isOccupied;
     
