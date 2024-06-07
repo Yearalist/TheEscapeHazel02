@@ -15,6 +15,8 @@ public class InspectObject : MonoBehaviour
     private Vector3 originalObejctPosition;
     private Vector3 lastMousePosition;
 
+    private Quaternion originalObjectRotaion;
+    
     public float rotationSpeed = 100f;
 
     private bool isDragging = false;
@@ -140,8 +142,10 @@ public class InspectObject : MonoBehaviour
     }
     private void BackObjectTransform()
     {
-        inspectingObject.transform.position = Vector3.Lerp(inspectingObject.transform.position,originalObejctPosition,0.2f);
-        if (originalObejctPosition == pickUpObjectScript.handPosition.position)
+        inspectingObject.transform.rotation = originalObjectRotaion;
+        inspectingObject.transform.position =originalObejctPosition;
+        float distance = Vector3.Distance(inspectingObject.transform.position, pickUpObjectScript.handPosition.position);
+        if (distance < 0.1f)
         {
             pickUpObjectScript.isHolding = true;
         }
