@@ -22,7 +22,7 @@ public class PickUpObject : MonoBehaviour
     private string spriteYName = "SpriteY";
     public bool isHolding = false; // Elimde obje var mı
     public ShelfManager shelfManager; // ShelfManager referansı
-    [SerializeField] private  TableSlotManager tableManager;
+    //BookCheck CheckBooks = FindObjectOfType<BookCheck>();
     [SerializeField] private BookPlacment bookPlacement;
     
 
@@ -76,7 +76,7 @@ public class PickUpObject : MonoBehaviour
             var rigidBody = holdingObject.GetComponent<Rigidbody>();
             var moveTo = handPosition.transform.position;
             var differance = moveTo - holdingObject.transform.position;
-            //rigidBody.AddForce(differance * 500);
+            rigidBody.AddForce(differance * 500);
             holdingObject.transform.rotation = handPosition.rotation;
         }
     }
@@ -162,6 +162,6 @@ public class PickUpObject : MonoBehaviour
         // holdingObject = null;
         // isHolding = false;
         // Debug.Log("Kitap bırakıldı.");
-    }
+    } 
     }
 

@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
-{
-   private CollectObject collectObjectScript;
+{ private CollectObject collectObjectScript;
     private InspectObject inspectObjectScript;
     private PickUpObject pickUpObjectScript;
     
@@ -30,7 +29,7 @@ public class Inventory : MonoBehaviour
         inspectObjectScript = FindObjectOfType<InspectObject>();
         pickUpObjectScript = FindObjectOfType<PickUpObject>();
         
-        inventorySlotsNumber = 3;
+        inventorySlotsNumber = 6;
         Debug.Log(inventorySlotsNumber);
         
         GameObject parentInvantoryObject=GameObject.FindWithTag("Inventory");
