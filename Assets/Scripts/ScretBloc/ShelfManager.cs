@@ -9,7 +9,9 @@ public class ShelfManager : MonoBehaviour
     
     public List<ShelfInfo> shelves; // Yönetilecek rafların listesi
     public float moveDistance = 1.0f; // Rafın hareket edeceği mesafe
+    [SerializeField] private AudioSource shelfMovingSound;
 
+    
     // Raflardaki slotların doluluk durumunu kontrol et ve gerekirse rafı hareket ettir
     public void CheckAndMoveShelf()
     {
@@ -41,6 +43,7 @@ public class ShelfManager : MonoBehaviour
 
             if (allSlotsFilled)
             {
+                shelfMovingSound.Play();
                 StartCoroutine(MoveShelfSmoothly(shelf));
                 // Hareket ettikten sonra slotların doluluğunu kontrol etmeye devam etmemize gerek yok
                 // Bu yüzden break ile döngüden çıkıyoruz
@@ -54,7 +57,7 @@ public class ShelfManager : MonoBehaviour
         Vector3 startPosition = shelf.transform.position;
         Vector3 endPosition = startPosition;
         endPosition.z += moveDistance;
-        float duration = 2.0f; // Hareketin süresi (saniye)
+        float duration = 5.0f; // Hareketin süresi (saniye)
         float elapsedTime = 0;
 
         while (elapsedTime < duration)

@@ -11,6 +11,8 @@ public class InputMenager : MonoBehaviour
 
     private PlayerMotor motor;
     private PlayerMotor look;
+
+    public bool canMove = true;
     
     void Awake()
     {
@@ -25,11 +27,15 @@ public class InputMenager : MonoBehaviour
     
     void FixedUpdate()
     {
+        if (!canMove) return;
+        
         motor.ProcessMove(onFoot.Movement.ReadValue<Vector2>());
     }
 
     private void LateUpdate()
     {
+        if (!canMove) return;
+
         look.ProcessLook(onFoot.Look.ReadValue<Vector2>());
     }
 

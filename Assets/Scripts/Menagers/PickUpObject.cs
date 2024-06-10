@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using SecretCloset;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 
 
@@ -13,7 +15,7 @@ using UnityEngine;
 
 public class PickUpObject : MonoBehaviour
 {
-    private InspectObject inspectObjectScript;
+      private InspectObject inspectObjectScript;
     private Inventory inventoryScript;
     public Transform handPosition; // Elin olması gereken pozisyon
     private Rigidbody holdingObjectRigidbody; // Eldeki objenin Rigidbodysi
@@ -22,10 +24,11 @@ public class PickUpObject : MonoBehaviour
     private string spriteYName = "SpriteY";
     public bool isHolding = false; // Elimde obje var mı
     public ShelfManager shelfManager; // ShelfManager referansı
-    [SerializeField] private  TableSlotManager tableManager;
+    [SerializeField] private TableSlotManager tableManager;
     [SerializeField] private BookPlacment bookPlacement;
+    [SerializeField] private TablePlacement tablePlacement;
+    [SerializeField] private AudioSource bookPickUpAudio, bookPlacementAudio, bookDropAudio, paintingDropAudio, paintingPickUpAudio, paintingPlacementAudio;
     
-
     void Start()
     {
         inspectObjectScript = FindObjectOfType<InspectObject>();
@@ -73,18 +76,27 @@ public class PickUpObject : MonoBehaviour
                 holdingObjectCollider.enabled = true;
             }
             holdingObject.transform.position = handPosition.transform.position;
-            var rigidBody = holdingObject.GetComponent<Rigidbody>();
-            var moveTo = handPosition.transform.position;
-            var differance = moveTo - holdingObject.transform.position;
-            //rigidBody.AddForce(differance * 500);
             holdingObject.transform.rotation = handPosition.rotation;
         }
     }
 
-    void PickUpItem()
+     void PickUpItem()
     {
         Debug.Log("Aldin");
         Debug.Log(holdingObject.name);
+        if (holdingObject.TryGetComponent(out BookInfo bookInfo))
+        {
+            bookPickUpAudio.Play();
+        }
+        else if (holdingObject.TryGetComponent(out TableInfo tableInfo))
+        {
+            paintingPickUpAudio.Play();
+        }
+        else if (holdingObject.TryGetComponent(out KeyInfo keyInfo))
+        {
+            // Anahtar alındı
+            Debug.Log("Anahtar alındı");
+        }
         isHolding = true;
         holdingObject.transform.position = Vector3.Lerp(holdingObject.transform.position, handPosition.transform.position, 0.4f);
         holdingObjectRigidbody = holdingObject.GetComponent<Rigidbody>();
@@ -95,27 +107,73 @@ public class PickUpObject : MonoBehaviour
 
     void DropItem()
     {
-        BookInfo bookInfo = holdingObject.GetComponent<BookInfo>();
-        if (bookPlacement.TryPlaceBook(bookInfo))
+        if (holdingObject.TryGetComponent<BookInfo>(out var bookInfo))
         {
-            holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
-            holdingObjectRigidbody.drag = 1f;
-            holdingObjectRigidbody.useGravity = true;
-            isHolding = false;
-            holdingObject = null;
+            if (bookPlacement.TryPlaceBook(bookInfo))
+            {
+                bookPlacementAudio.Play();
+                ReleaseHoldingObject();
+            }
+            else
+            {
+                bookDropAudio.Play();
+                NormalDrop();
+            }
         }
-        else
+        else if (holdingObject.TryGetComponent<TableInfo>(out var tableInfo))
         {
-            // Eğer slot bulunamazsa veya doluysa kitabı normal bir şekilde bırak
-            var rigidBody = holdingObject.GetComponent<Rigidbody>();
-            rigidBody.drag = 1f;
-            rigidBody.useGravity = true;
-            rigidBody.constraints = RigidbodyConstraints.None;
-            holdingObject.transform.SetParent(null);
-            holdingObject = null;
-            isHolding = false;
-            Debug.Log("Kitap bırakıldı.");
+            if (tablePlacement.TryPlaceTable(tableInfo))
+            {
+                paintingPlacementAudio.Play();
+                ReleaseHoldingObject();
+            }
+            else
+            {
+                paintingDropAudio.Play();
+                NormalDrop();
+            }
         }
+        else if (holdingObject.TryGetComponent<KeyInfo>(out var keyInfo))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.TryGetComponent<DoorLockInfo>(out var doorLockInfo))
+                {
+                    if (doorLockInfo.lockCode == keyInfo.keyCode)
+                    {
+                        // Anahtar doğru kilide yerleştirildi, sahne geçişi yap
+                        SceneManager.LoadScene(doorLockInfo.nextSceneName);
+                        ReleaseHoldingObject();
+                        return;
+                    }
+                }
+            }
+            NormalDrop(); // Eğer anahtar doğru yere bırakılmadıysa normal bırakma işlemi yap
+        }
+    }
+
+    void ReleaseHoldingObject()
+    {
+        holdingObjectRigidbody.constraints = RigidbodyConstraints.None; // Rotasyon sınırlamalarını kaldır
+        holdingObjectRigidbody.drag = 1f;
+        holdingObjectRigidbody.useGravity = true;
+        isHolding = false;
+        holdingObject = null;
+    }
+
+    void NormalDrop()
+    {
+        var rigidBody = holdingObject.GetComponent<Rigidbody>();
+        rigidBody.drag = 1f;
+        holdingObjectRigidbody.isKinematic = false;
+        rigidBody.useGravity = true;
+        rigidBody.constraints = RigidbodyConstraints.None;
+        holdingObject.transform.SetParent(null);
+        holdingObject = null;
+        isHolding = false;
+        Debug.Log("Nesne bırakıldı.");
+    }
         // RaycastHit hit;
         // if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
         // {
@@ -163,5 +221,4 @@ public class PickUpObject : MonoBehaviour
         // isHolding = false;
         // Debug.Log("Kitap bırakıldı.");
     }
-    }
-
+    

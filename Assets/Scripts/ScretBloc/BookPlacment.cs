@@ -39,9 +39,9 @@ namespace SecretCloset
                     {
                         Debug.LogError("ShelfManager is not assigned!");
                     }
+                    return true;
                 }
 
-                return true;
             }
 
             return false;

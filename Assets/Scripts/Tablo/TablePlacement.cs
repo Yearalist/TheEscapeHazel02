@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TablePlacement : MonoBehaviour
-{ public List<TableSlotInfo> shelves; // Rafların listesi
-   // public TableSlotManager shelfManager;
-        
+{
+    public List<TableSlotInfo> shelves; // Rafların listesi
+    [SerializeField] private TableSlotManager tableSlotManager;
+
+
+    // public TableSlotManager shelfManager;
+
     // Kitabı doğru slota yerleştirme işlemini gerçekleştirir
     public bool TryPlaceTable(TableInfo table)
     {
@@ -18,30 +22,25 @@ public class TablePlacement : MonoBehaviour
                 slot.isOccupied = true;
                 //CheckBooks.CheckBooks();
                 table.transform.SetParent(slot.tableSlotTransform);
-                table.transform.localPosition = Vector3.zero;  // Kitabın slot içinde düzgün yerleşmesini sağlamak için
+                table.transform.localPosition = Vector3.zero; // Kitabın slot içinde düzgün yerleşmesini sağlamak için
                 table.transform.localRotation = Quaternion.identity;
 
                 // Kitabın pozisyonunu ve rotasyonunu slotun pozisyonu ve rotasyonuna ayarla
                 table.transform.position = slot.tableSlotTransform.position;
                 table.transform.rotation = slot.tableSlotTransform.rotation;
-                
+
                 Debug.Log($"table  kodu {slot.tableSlotCode} olan slota yerleştirildi.");
-                    
+
                 // Slotları kontrol et ve rafı hareket ettir
-               // if (TableSlotManager != null)
+                if (tableSlotManager != null)
                 {
-                   // shelfManager.CheckAndMoveShelf();
+                    tableSlotManager.CheckAndMoveTable();
                 }
-              //  else
-                {
-                    //Debug.LogError("ShelfManager is not assigned!");
-                }
+                return true;
             }
 
-            return true;
         }
 
         return false;
     }
 }
-
