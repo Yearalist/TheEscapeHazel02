@@ -25,6 +25,7 @@ public class InspectObject : MonoBehaviour
     private string openableBookTag;
     
     RaycastHit hit;
+    [SerializeField] private GameObject fakeCursor;
     
 
     void Start()
@@ -80,6 +81,8 @@ public class InspectObject : MonoBehaviour
 
     private void InspectItem()
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        fakeCursor.SetActive(false);
         //test edilmedi kitabin ismi ile ayni olan open halini getirir
         if (inspectingObject.CompareTag(openableBookTag))
         {
@@ -90,6 +93,7 @@ public class InspectObject : MonoBehaviour
             inspectingObject.GetComponent<MeshRenderer>().enabled=true;
         }
         inputMenagerScript.enabled = false;
+        originalObjectRotaion = inspectingObject.transform.rotation;
         originalObejctPosition = inspectingObject.transform.position;
         Debug.Log("Inceliyon");
         
@@ -162,5 +166,8 @@ public class InspectObject : MonoBehaviour
         inspectingObject = null;
         isInspecting = false;
         inputMenagerScript.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        fakeCursor.SetActive(true);
     }
 }
