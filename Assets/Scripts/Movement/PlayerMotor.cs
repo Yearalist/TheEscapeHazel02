@@ -11,16 +11,16 @@ public class PlayerMotor : MonoBehaviour
     private bool _crouching ;
     
     public float gravity = -9.8f;
-    public float crouchHeight=0.75f;
-    public float originalHeight;
-    public float speed = 25f;
-    public float crouchSpeed = 15f;
+    public float crouchHeight=1f;
+    public float originalHeight=4;
+    public float speed = 15f;
+    public float crouchSpeed = 5f;
 
 //Look
     public Camera cam;
     private float xRotation = 0f;
-    public float xSensitivity = 600f;
-    public float ySensitivity = 600f;
+    public float xSensitivity = 30f;
+    public float ySensitivity = 30f;
     
     void Start()
     {
@@ -58,13 +58,13 @@ public class PlayerMotor : MonoBehaviour
             if (!_crouching)
             {
                 _controller.height = crouchHeight;
-                speed = 15f;
+                speed = 5f;
                 _crouching = true;
             }
             else
             {
                 _controller.height = originalHeight;
-                speed = 25f;
+                speed = 15f;
                 _crouching = false;
             }
             
